@@ -138,7 +138,7 @@ export default function Home() {
                   />
                 </th>
               ))}
-              <th className="border border-gray-700 p-2 text-center rounded-tr-lg">Remove</th>
+              <th className="border border-gray-700 p-2 text-center rounded-tr-lg"></th>
             </tr>
           </thead>
           <tbody>
