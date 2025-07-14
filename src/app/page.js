@@ -111,7 +111,7 @@ export default function Home() {
               const isLastRound = roundIndex === scores.length - 1;
               return (
                 <tr key={roundIndex}>
-                  <td className="border border-gray-300 p-2">Round {roundIndex + 1}</td>
+                  <td className="border border-gray-300 p-2">{roundIndex + 1}</td>
                   {roundScores.map((score, playerIndex) => (
                     <td key={playerIndex} className="border border-gray-300 p-2">
                       <input
