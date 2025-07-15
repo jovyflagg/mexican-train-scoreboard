@@ -7,8 +7,7 @@ import { UsersContext } from "../../../../context/UserContext";
 const Navbar = () => {
   const { user, signOutUser } = useContext(UsersContext); // 👈 make sure this matches context
   const [menuOpen, setMenuOpen] = useState(false);
-  console.log("user from Navbar", user);
-  console.log("context full value", useContext(UsersContext));
+
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
   const closeMenu = () => setMenuOpen(false);

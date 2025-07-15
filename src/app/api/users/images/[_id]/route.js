@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
-import User from "../../../../../models/user";
-import { connectToDatabase } from "../../../../../utils/database";  // Import connectToDatabase function
+import User from "../../../../../../models/user";
+import { connectToDatabase } from "../../../../../../utils/database";  // Import connectToDatabase function
 import { NextResponse } from "next/server";
 import { Readable } from "stream";
 
@@ -14,10 +14,9 @@ export async function PUT(request, { params }) {
 
   try {
     const { bucket } = await connectToDatabase(); // Use connectToDatabase to establish the connection
-    const { _id } = params;
+    const { _id } = await params;
     const data = await request.formData();
     const image = data.get("image");
-    const name = data.get("name");
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -49,7 +48,7 @@ export async function PUT(request, { params }) {
 
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
-      { name, imageId },
+      { imageId },
       { new: true } // Returns the updated document
     );
 

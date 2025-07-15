@@ -51,29 +51,32 @@ const UsersContextProvider = ({ children }) => {
     fetchUser();
   }, [session?.user]);
 
-  const updateImage = async (_id, updatedData) => {
-    const formData = new FormData();
-    if (updatedData.name) formData.append("name", updatedData.name);
-    if (updatedData.image instanceof File) formData.append("image", updatedData.image);
+const updateImage = async (_id, updatedData) => {
+  const formData = new FormData();
+  if (updatedData.image instanceof File) formData.append("image", updatedData.image);
 
-    for (let [key, val] of formData.entries()) {
-      console.log(key, val); // debug
-    }
+  try {
+    const response = await fetch(`/api/users/images/${_id}`, {
+      method: "PUT",
+      body: formData,
+    });
 
-    try {
-      const response = await fetch(`/api/users/${_id}`, {
-        method: "PUT",
-        body: formData, // ✅ DO NOT SET headers
+    if (!response.ok) throw new Error("User update failed");
+
+    const data = await response.json();
+    console.log("data", data)
+    // ✅ Set imagefileUrl directly
+    if (data?.user && data?.imagefileUrl) {
+      setUser({
+        ...data.user,
+        imagefileUrl: data.imagefileUrl,
       });
-
-      if (!response.ok) throw new Error("User update failed");
-
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.error("Error updating user:", error);
     }
-  };
+  } catch (error) {
+    console.error("Error updating user:", error);
+  }
+};
+
 
 
   const signOutUser = async () => {

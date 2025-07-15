@@ -4,9 +4,11 @@ import Image from "next/image";
 import { UsersContext } from "../../../../context/UserContext";
 import SkeletonProfile from "../Skeleton/SkeletonProfile";
 
-
 const Profile = () => {
-  const { user, update } = useContext(UsersContext);
+  const { user, updateImage, setUser } = useContext(UsersContext);
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [newName, setNewName] = useState({ name: user?.name || "" });
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
@@ -17,23 +19,42 @@ const Profile = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    // Revoke previous preview to prevent memory leaks
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    console.log(name, value);
+    setNewName((prev) => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleUpload = async () => {
     if (!selectedFile) return;
     setIsUploading(true);
-    console.log("handleUpload")
-    console.log("selectedFile",selectedFile)
-    console.log("user._id",user._id)
-    // Simulate async upload (replace with real upload logic)
-    await new Promise((res) => setTimeout(res, 2000));
-    updateImage(user._id,selectedFile)
-    // TODO: Call your actual upload API here
+
+    await updateImage(user._id, { image: selectedFile });
 
     setIsUploading(false);
     setSelectedFile(null);
+    setPreviewUrl("");
+  };
+
+  const handleSave = async () => {
+    setIsUploading(true);
+
+    await updateImage(user._id, { ...newName });
+    setUser((prev) => ({ ...prev, ...newName }));
+
+    setIsUploading(false);
+    setIsEditModalOpen(false);
   };
 
   return (
@@ -46,7 +67,11 @@ const Profile = () => {
         <div className="bg-indigo-700 text-white p-8 flex flex-col items-center justify-center gap-4 md:col-span-1">
           <div className="relative w-32 h-32">
             <Image
-              src={user?.imagefileUrl || previewUrl || "/profile-placeholder.jpg"}
+              src={
+                previewUrl
+                  ? previewUrl
+                  : user?.imagefileUrl || "/profile-placeholder.jpg"
+              }
               alt="Profile Picture"
               fill
               className="rounded-full object-cover border-4 border-white"
@@ -97,8 +122,6 @@ const Profile = () => {
               )}
             </button>
           )}
-
-          <h2 className="text-2xl font-semibold mt-4">{user?.name}</h2>
         </div>
 
         {/* Right: Details */}
@@ -120,12 +143,58 @@ const Profile = () => {
           </div>
 
           <div className="pt-6">
-            <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              className="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition"
+            >
               Edit Profile
             </button>
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 text-black">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 space-y-4">
+            <h2 className="text-xl font-semibold text-gray-800">Edit Profile</h2>
+
+            <div className="space-y-2">
+              <label className="block text-sm text-gray-600">Full Name</label>
+              <input
+                type="text"
+                name="name"
+                value={newName.name}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              />
+
+              <label className="block text-sm text-gray-600">Email</label>
+              <input
+                type="email"
+                value={user.email}
+                disabled
+                className="w-full px-3 py-2 border border-gray-200 bg-gray-100 text-gray-500 rounded-lg"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

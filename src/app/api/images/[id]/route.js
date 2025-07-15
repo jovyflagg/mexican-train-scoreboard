@@ -1,4 +1,4 @@
-import { connectToDatabase } from "../..//../../utils/database";
+import { connectToDatabase } from "../../../../../utils/database";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 
