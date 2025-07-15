@@ -5,10 +5,11 @@ import { UsersContext } from "../../../../context/UserContext";
 import SkeletonProfile from "../Skeleton/SkeletonProfile";
 
 const Profile = () => {
-  const { user, updateImage, setUser } = useContext(UsersContext);
+  const { user, updateImage, setUser, update } = useContext(UsersContext);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [newName, setNewName] = useState({ name: user?.name || "" });
+  // rename state+setter to make intention clear:
+  const [profileData, setProfileData] = useState({ name: user?.name || "" });
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
@@ -20,27 +21,23 @@ const Profile = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Revoke previous preview to prevent memory leaks
     if (previewUrl) URL.revokeObjectURL(previewUrl);
-
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    console.log(name, value);
-    setNewName((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProfileData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleUpload = async () => {
     if (!selectedFile) return;
     setIsUploading(true);
 
-    await updateImage(user._id, { image: selectedFile });
+    const updated = await updateImage(user._id, { image: selectedFile });
+    // if your context returns the new imagefileUrl, you could:
+    // if (updated?.imagefileUrl) setUser(u => ({ ...u, imagefileUrl: updated.imagefileUrl }));
 
     setIsUploading(false);
     setSelectedFile(null);
@@ -50,11 +47,21 @@ const Profile = () => {
   const handleSave = async () => {
     setIsUploading(true);
 
-    await updateImage(user._id, { ...newName });
-    setUser((prev) => ({ ...prev, ...newName }));
+    // call your generic `update` (for name)
+    const updated = await update(user._id, { name: profileData.name });
+    if (updated?.user) {
+      // merge in any returned user fields
+      setUser((prev) => ({ ...prev, name: updated.user.name }));
+    }
 
     setIsUploading(false);
     setIsEditModalOpen(false);
+  };
+
+  // open modal and reset the form field to current name
+  const openEditModal = () => {
+    setProfileData({ name: user.name });
+    setIsEditModalOpen(true);
   };
 
   return (
@@ -63,7 +70,7 @@ const Profile = () => {
       className="min-h-screen bg-gradient-to-b from-white to-gray-100 py-20 px-6"
     >
       <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-3">
-        {/* Left: Profile Image + Name */}
+        {/* Left: Profile Image + Upload */}
         <div className="bg-indigo-700 text-white p-8 flex flex-col items-center justify-center gap-4 md:col-span-1">
           <div className="relative w-32 h-32">
             <Image
@@ -94,32 +101,7 @@ const Profile = () => {
               disabled={isUploading}
               className="mt-2 bg-white text-indigo-700 px-4 py-1 rounded hover:bg-indigo-100 font-semibold text-sm transition disabled:opacity-50"
             >
-              {isUploading ? (
-                <span className="flex items-center gap-2">
-                  <svg
-                    className="animate-spin h-4 w-4 text-indigo-700"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8v4l5-5-5-5v4a12 12 0 00-12 12h4z"
-                    ></path>
-                  </svg>
-                  Uploading...
-                </span>
-              ) : (
-                "Upload Image"
-              )}
+              {isUploading ? "Uploading…" : "Upload Image"}
             </button>
           )}
         </div>
@@ -134,17 +116,19 @@ const Profile = () => {
               <label className="block text-gray-600 text-sm mb-1">
                 Full Name
               </label>
-              <p className="text-gray-900">{user?.name}</p>
+              <p className="text-gray-900">{user.name}</p>
             </div>
             <div>
-              <label className="block text-gray-600 text-sm mb-1">Email</label>
-              <p className="text-gray-900">{user?.email}</p>
+              <label className="block text-gray-600 text-sm mb-1">
+                Email
+              </label>
+              <p className="text-gray-900">{user.email}</p>
             </div>
           </div>
 
           <div className="pt-6">
             <button
-              onClick={() => setIsEditModalOpen(true)}
+              onClick={openEditModal}
               className="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition"
             >
               Edit Profile
@@ -153,18 +137,20 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 text-black">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 space-y-4">
-            <h2 className="text-xl font-semibold text-gray-800">Edit Profile</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Edit Profile
+            </h2>
 
             <div className="space-y-2">
               <label className="block text-sm text-gray-600">Full Name</label>
               <input
                 type="text"
                 name="name"
-                value={newName.name}
+                value={profileData.name}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg"
               />
@@ -187,9 +173,10 @@ const Profile = () => {
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                disabled={isUploading}
+                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50"
               >
-                Save
+                {isUploading ? "Saving…" : "Save"}
               </button>
             </div>
           </div>

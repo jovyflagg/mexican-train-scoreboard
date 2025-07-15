@@ -77,6 +77,29 @@ const updateImage = async (_id, updatedData) => {
   }
 };
 
+const update = async (_id, updatedData) => {
+  console.log("update", _id, updatedData);
+
+  try {
+    const response = await fetch(`/api/users/${_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update user");
+    }
+
+    const data = await response.json();
+    return data; // expected to contain { user: {...} }
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return null;
+  }
+};
 
 
   const signOutUser = async () => {
@@ -86,7 +109,7 @@ const updateImage = async (_id, updatedData) => {
   };
 
   return (
-    <UsersContext.Provider value={{ user, loading, setUser, updateImage, signOutUser }}>
+    <UsersContext.Provider value={{ user, loading, update, setUser, updateImage, signOutUser }}>
       {children}
     </UsersContext.Provider>
   );
