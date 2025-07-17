@@ -16,7 +16,7 @@ export async function PUT(request, { params }) {
         const { bucket } = await connectToDatabase(); // Use connectToDatabase to establish the connection
         const { _id } = await params;
         const data = await request.json();
-        console.log("data", data)
+       
 
         const user = await User.findOne({ email });
 

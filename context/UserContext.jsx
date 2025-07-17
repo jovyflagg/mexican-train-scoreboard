@@ -94,6 +94,7 @@ const update = async (_id, updatedData) => {
     }
 
     const data = await response.json();
+    console.log("updated data",data)
     return data; // expected to contain { user: {...} }
   } catch (error) {
     console.error("Error updating user:", error);

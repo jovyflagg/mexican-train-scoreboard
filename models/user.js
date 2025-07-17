@@ -9,13 +9,21 @@ const UserSchema = new Schema(
     },
     name: {
       type: String,
-      required: [false, "Name is required"],
     },
-    imageId: { type: Schema.Types.ObjectId, ref: "uploads.files" }, // Profile picture
-    
+    imageId: {
+      type: Schema.Types.ObjectId,
+      ref: "uploads.files", // GridFS
+    },
     password: {
       type: String,
-    }
+      required: [true, "Password is required"], // Assuming credential-based login
+    },
+    todos: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Todo",
+      },
+    ],
   },
   { timestamps: true }
 );

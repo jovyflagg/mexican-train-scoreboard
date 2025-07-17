@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import Provider from "../../context/Provider";
 import UsersContextProvider from "../../context/UserContext";
+import TodoContextProvider from "../../context/TodoContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,13 +25,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-      
-        className={`${geistSans.variable} ${geistMono.variable} antialiased ` }
+
+        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
         <Provider>
           <UsersContextProvider>
             <Navbar />
-            {children}
+            <TodoContextProvider>
+              {children}
+            </TodoContextProvider>
           </UsersContextProvider>
           <Footer />
         </Provider>

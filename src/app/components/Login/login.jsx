@@ -10,8 +10,8 @@ const LoginForm = () => {
     const { user } = useContext(UsersContext)
 
     const [login, setLogin] = useState({
-        email: "",
-        password: "",
+        email: "honey@gmail.com",
+        password: "123",
     });
     const [error, setError] = useState("");
 

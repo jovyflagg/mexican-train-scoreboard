@@ -35,7 +35,7 @@ const Profile = () => {
     if (!selectedFile) return;
     setIsUploading(true);
 
-    const updated = await updateImage(user._id, { image: selectedFile });
+    await updateImage(user._id, { image: selectedFile });
     // if your context returns the new imagefileUrl, you could:
     // if (updated?.imagefileUrl) setUser(u => ({ ...u, imagefileUrl: updated.imagefileUrl }));
 
@@ -81,8 +81,12 @@ const Profile = () => {
               }
               alt="Profile Picture"
               fill
+              sizes="128px"
+              priority // ✅ Add this
               className="rounded-full object-cover border-4 border-white"
             />
+
+
           </div>
 
           <label className="mt-2 text-sm text-indigo-100">
