@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 export const TodoContext = createContext({});
 
 const TodoContextProvider = ({ children }) => {
-  const PAGE_SIZE = 10;
+  const PAGE_SIZE = 5;
   const { data: session } = useSession();
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,6 +48,7 @@ const TodoContextProvider = ({ children }) => {
   }, [session?.user?.email, page, search]);
 
   const createTodo = async (data) => {
+    setLoading(true);
     try {
       const res = await fetch("/api/todos", {
         method: "POST",
@@ -58,6 +59,8 @@ const TodoContextProvider = ({ children }) => {
       setTodos((prev) => [incoming.todo, ...prev]);
     } catch (err) {
       console.error("Error creating todo:", err);
+    } finally {
+      setLoading(false);
     }
   };
 

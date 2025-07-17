@@ -2,6 +2,7 @@
 
 import { useContext, useState } from "react";
 import { TodoContext } from "../../../../context/TodoContext";
+import SkeletonTodoList from "../Skeleton/SkeletonTodoList";
 
 export default function Todo() {
     const {
@@ -15,10 +16,11 @@ export default function Todo() {
         prevPage,
         search,
         setSearch,
+        loading, // <-- Ensure this comes from context
     } = useContext(TodoContext);
 
     const [input, setInput] = useState({
-        title: "This is the Title",
+        title: "",
         completed: false,
     });
 
@@ -32,7 +34,7 @@ export default function Todo() {
             title: input.title.trim(),
             completed: input.completed,
         });
-        setInput({ title: "This is the Title", completed: false });
+        setInput({ title: "", completed: false });
     };
 
     const removeTodo = async (_id) => {
@@ -88,23 +90,18 @@ export default function Todo() {
                 />
 
                 {/* Scrollable Todo List */}
-                <div className="flex-1 overflow-y-auto pr-2">
-                    <ul className="space-y-3">
+           
+                    <ul className="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
                         {todos.map((todo) => (
                             <li
                                 key={todo._id}
-                                className={`flex items-center justify-between p-4 rounded-md shadow-sm border ${
-                                    todo.completed
-                                        ? "bg-green-100 border-green-300"
-                                        : "bg-white border-gray-200"
-                                }`}
+                                className={`flex items-center justify-between p-4 rounded-md shadow-sm border ${todo.completed
+                                    ? "bg-green-100 border-green-300"
+                                    : "bg-white border-gray-200"
+                                    }`}
                             >
                                 <span
-                                    className={`flex-1 ${
-                                        todo.completed
-                                            ? "line-through text-gray-500"
-                                            : "text-gray-800"
-                                    }`}
+                                    className={`flex-1 ${todo.completed ? "line-through text-gray-500" : "text-gray-800"}`}
                                 >
                                     {todo.title}
                                 </span>
@@ -125,13 +122,8 @@ export default function Todo() {
                             </li>
                         ))}
                     </ul>
+            
 
-                    {todos.length === 0 && (
-                        <p className="text-center text-gray-500 italic mt-10">
-                            No tasks yet. Add something to do.
-                        </p>
-                    )}
-                </div>
             </div>
 
             {/* Pagination Controls */}
