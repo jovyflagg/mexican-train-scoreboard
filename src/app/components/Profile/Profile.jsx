@@ -4,7 +4,7 @@ import Image from "next/image";
 import { UsersContext } from "../../../../context/UserContext";
 import SkeletonProfile from "../Skeleton/SkeletonProfile";
 
-const Profile = () => {
+const Profile = ({ view }) => {
   const { user, updateImage, setUser, update } = useContext(UsersContext);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

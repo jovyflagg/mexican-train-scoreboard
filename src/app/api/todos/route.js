@@ -52,10 +52,11 @@ export async function POST(request) {
   }
 }
 
+
 export async function GET(request) {
   const session = await getServerSession();
   const user_email = session?.user?.email;
-
+  
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get("page")) || 5;
   const limit = parseInt(searchParams.get("limit")) || 1;
@@ -102,6 +103,3 @@ export async function GET(request) {
     );
   }
 }
-
-// ... (Keep your existing PUT and DELETE unchanged)
-

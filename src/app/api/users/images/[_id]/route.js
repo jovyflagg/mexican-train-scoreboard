@@ -14,7 +14,6 @@ export async function PUT(request, { params }) {
 
   try {
     const { bucket } = await connectToDatabase(); // Use connectToDatabase to establish the connection
-    const { _id } = await params;
     const data = await request.formData();
     const image = data.get("image");
     const user = await User.findOne({ email });

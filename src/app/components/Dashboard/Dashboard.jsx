@@ -16,7 +16,7 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto space-y-12">
         <h2 className="text-3xl font-bold text-gray-800">Welcome {user?.name}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Link href={'/todo'}>
+          <Link href={'/todos'}>
             <div className="bg-white rounded-xl shadow p-6 space-y-3">
               <div className="flex items-center gap-3 text-indigo-600">
                 <FaChartBar className="text-2xl" />

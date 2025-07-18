@@ -1,13 +1,11 @@
 "use client"
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { UsersContext } from "../../../../context/UserContext";
 
 const LoginForm = () => {
     const router = useRouter();
-    const { user } = useContext(UsersContext)
 
     const [login, setLogin] = useState({
         email: "honey@gmail.com",
@@ -53,7 +51,7 @@ const LoginForm = () => {
         <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
             <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
                 <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
-                    Login to Your Games Account
+                    Login to your account
                 </h2>
                 {error && (
                     <div className="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">
@@ -106,6 +104,12 @@ const LoginForm = () => {
                         Login
                     </button>
                 </form>
+                    <p className="flex items-center justify-center mt-4 text-sm text-gray-600">
+                       
+                        <Link href="#" className="text-indigo-600 hover:underline">
+                        Forgot password
+                        </Link>
+                    </p>
                 <div className="mt-6 text-center">
                     <button
                         className="w-full flex items-center justify-center border border-gray-300 bg-white py-2 px-4 rounded-md shadow-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"

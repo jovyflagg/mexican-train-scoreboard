@@ -3,6 +3,7 @@
 import { useContext, useState } from "react";
 import { TodoContext } from "../../../../context/TodoContext";
 import SkeletonTodoList from "../Skeleton/SkeletonTodoList";
+import Link from "next/link";
 
 export default function Todo() {
     const {
@@ -49,10 +50,14 @@ export default function Todo() {
 
     const saveEdit = async () => {
         if (!editedTitle.trim()) return;
-
         const updatedTitle = editedTitle.trim();
         const _id = editTodo._id;
         await updateTodo(_id, { title: updatedTitle });
+        setIsEditing(false);
+    };
+
+    const handleUpdate = async (_id, data) => {
+        await updateTodo(_id, data);
         setIsEditing(false);
     };
 
@@ -90,21 +95,39 @@ export default function Todo() {
                 />
 
                 {/* Scrollable Todo List */}
-           
+                {loading ? (
+                    <SkeletonTodoList />
+                ) : (
                     <ul className="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
                         {todos.map((todo) => (
                             <li
                                 key={todo._id}
-                                className={`flex items-center justify-between p-4 rounded-md shadow-sm border ${todo.completed
-                                    ? "bg-green-100 border-green-300"
-                                    : "bg-white border-gray-200"
+                                className={`flex items-center justify-between p-4 rounded-md shadow-sm border ${todo.completed ? "bg-green-100 border-green-300" : "bg-white border-gray-200"
                                     }`}
                             >
+
                                 <span
-                                    className={`flex-1 ${todo.completed ? "line-through text-gray-500" : "text-gray-800"}`}
+                                    className={`flex-1 ${todo.completed ? "line-through text-gray-500" : "text-gray-800"
+                                        }`}
                                 >
-                                    {todo.title}
+                                    <Link
+                                        href={`tododetails/${todo._id}`}>
+                                        {todo.title}
+                                    </Link>
                                 </span>
+
+                                {/* Toggle button */}
+                                <button
+                                    onClick={() => handleUpdate(todo._id, { completed: !todo.completed })}
+                                    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${todo.completed ? "bg-green-500" : "bg-gray-300"
+                                        }`}
+                                >
+                                    <div
+                                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${todo.completed ? "translate-x-6" : ""
+                                            }`}
+                                    />
+                                </button>
+
                                 <div className="flex items-center gap-2 ml-4">
                                     <button
                                         onClick={() => openEditModal(todo)}
@@ -121,8 +144,11 @@ export default function Todo() {
                                 </div>
                             </li>
                         ))}
+
                     </ul>
-            
+                )}
+
+
 
             </div>
 

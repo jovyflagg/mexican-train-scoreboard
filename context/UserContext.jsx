@@ -51,57 +51,55 @@ const UsersContextProvider = ({ children }) => {
     fetchUser();
   }, [session?.user]);
 
-const updateImage = async (_id, updatedData) => {
-  const formData = new FormData();
-  if (updatedData.image instanceof File) formData.append("image", updatedData.image);
+  const updateImage = async (_id, updatedData) => {
+    const formData = new FormData();
+    if (updatedData.image instanceof File) formData.append("image", updatedData.image);
 
-  try {
-    const response = await fetch(`/api/users/images/${_id}`, {
-      method: "PUT",
-      body: formData,
-    });
-
-    if (!response.ok) throw new Error("User update failed");
-
-    const data = await response.json();
-    console.log("data", data)
-    // ✅ Set imagefileUrl directly
-    if (data?.user && data?.imagefileUrl) {
-      setUser({
-        ...data.user,
-        imagefileUrl: data.imagefileUrl,
+    try {
+      const response = await fetch(`/api/users/images/${_id}`, {
+        method: "PUT",
+        body: formData,
       });
+
+      if (!response.ok) throw new Error("User update failed");
+
+      const data = await response.json();
+      console.log("data", data)
+      // ✅ Set imagefileUrl directly
+      if (data?.user && data?.imagefileUrl) {
+        setUser({
+          ...data.user,
+          imagefileUrl: data.imagefileUrl,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
     }
-  } catch (error) {
-    console.error("Error updating user:", error);
-  }
-};
+  };
 
-const update = async (_id, updatedData) => {
-  console.log("update", _id, updatedData);
+  const update = async (_id, updatedData) => {
 
-  try {
-    const response = await fetch(`/api/users/${_id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedData),
-    });
+    try {
+      const response = await fetch(`/api/users/${_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      });
 
-    if (!response.ok) {
-      throw new Error("Failed to update user");
+      if (!response.ok) {
+        throw new Error("Failed to update user");
+      }
+
+      const data = await response.json();
+      console.log("updated data", data)
+      return data; // expected to contain { user: {...} }
+    } catch (error) {
+      console.error("Error updating user:", error);
+      return null;
     }
-
-    const data = await response.json();
-    console.log("updated data",data)
-    return data; // expected to contain { user: {...} }
-  } catch (error) {
-    console.error("Error updating user:", error);
-    return null;
-  }
-};
-
+  };
 
   const signOutUser = async () => {
     setUser(null);

@@ -44,6 +44,7 @@ const Navbar = () => {
                 <li><Link href="/">Home</Link></li>
                 <li><Link href="/dashboard">Dashboard</Link></li>
                 <li><button onClick={logout}>Sign out</button></li>
+                
               </>
             ) : (
               <>
@@ -55,6 +56,7 @@ const Navbar = () => {
 
           {user?.imagefileUrl && (
             <div className="relative ml-4" ref={dropdownRef}>
+              
               <button onClick={toggleDropdown}>
                 <div className="w-11 h-11 relative rounded-full overflow-hidden border-2 border-white">
                   <Image

@@ -4,14 +4,11 @@ import { getServerSession } from "next-auth";
 import User from "../../../../../models/user";
 import Todo from "../../../../../models/todo";
 
-export async function GET(request) {
+export async function GET(request, { params }) {
   const session = await getServerSession();
   const user_email = session?.user?.email;
 
-  const { searchParams } = new URL(request.url);
-  const page = parseInt(searchParams.get("page")) ;
-  const limit = parseInt(searchParams.get("limit")) ;
-  const skip = (page - 1) * limit;
+  const _id = await params
 
   try {
     await connectToDatabase();
@@ -24,24 +21,12 @@ export async function GET(request) {
       );
     }
 
-    const todos = await Todo.find({ userId: user._id })
-      .select("_id title completed")
-      .skip(skip)
-      .limit(limit);
-
-    const total = await Todo.countDocuments({ userId: user._id });
-    const totalPages = Math.ceil(total / limit);
+    const todo = await Todo.find(_id)
 
     return NextResponse.json(
       {
-        message: "Todos fetched successfully",
-        todos,
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages,
-        },
+        message: "Todo fetched successfully",
+        todo
       },
       { status: 200 }
     );
@@ -53,24 +38,26 @@ export async function GET(request) {
     );
   }
 }
+
 export async function PUT(request, { params }) {
   const session = await getServerSession();
   const user_email = session?.user?.email;
 
-  const { _id } = params; // ✅ no await here
+  const { _id } = await params; // ✅ no await here
   const data = await request.json(); // ✅ get update data from body
-  console.log("_id", _id)
-  console.log("data", data)
+
   try {
     await connectToDatabase();
 
     const user = await User.findOne({ email: user_email }).select("todos");
+
     if (!user) {
       return NextResponse.json({ message: `User ${user_email} not found` }, { status: 404 });
     }
 
     // ✅ perform update
     const updated = await Todo.findByIdAndUpdate(_id, data, { new: true });
+
     if (!updated) {
       return NextResponse.json({ message: `Todo with id ${_id} not found` }, { status: 404 });
     }
@@ -86,9 +73,10 @@ export async function DELETE(request, { params }) {
   const session = await getServerSession();
   const user_email = session?.user?.email;
 
-  const { _id } = await params; // don't await this
+  const { _id } = await params;
 
   try {
+
     await connectToDatabase();
 
     const user = await User.findOne({ email: user_email }).select("todos");

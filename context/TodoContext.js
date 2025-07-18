@@ -65,6 +65,7 @@ const TodoContextProvider = ({ children }) => {
   };
 
   const updateTodo = async (_id, updateData) => {
+
     try {
       const res = await fetch(`/api/todos/${_id}`, {
         method: "PUT",
@@ -75,6 +76,8 @@ const TodoContextProvider = ({ children }) => {
       setTodos((prev) =>
         prev.map((todo) => (todo._id === _id ? incoming.updated : todo))
       );
+
+      return incoming.updated
     } catch (err) {
       console.error("Error updating todo:", err);
     }
@@ -89,6 +92,21 @@ const TodoContextProvider = ({ children }) => {
     }
   };
 
+  const getTodoDetails = async (_id) => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/todos/${_id}`);
+      if (!res.ok) throw new Error('Failed to fetch todo details');
+      const data = await res.json();
+      return data.todo[0];
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   const nextPage = () => {
     if (page < totalPages) setPage(page + 1);
   };
@@ -102,14 +120,15 @@ const TodoContextProvider = ({ children }) => {
       value={{
         todos,
         loading,
-        createTodo,
-        updateTodo,
-        deleteTodo,
         page,
         totalPages,
+        search,
+        createTodo,
+        getTodoDetails,
+        updateTodo,
+        deleteTodo,
         nextPage,
         prevPage,
-        search,
         setSearch,
       }}
     >

@@ -7,16 +7,14 @@ const UserSchema = new Schema(
       unique: [true, "Email already exists"],
       required: [true, "Email is required"],
     },
-    name: {
-      type: String,
-    },
+    name: String,
     imageId: {
       type: Schema.Types.ObjectId,
       ref: "uploads.files", // GridFS
     },
     password: {
       type: String,
-      required: [true, "Password is required"], // Assuming credential-based login
+      required: [true, "Password is required"],
     },
     todos: [
       {
@@ -24,10 +22,11 @@ const UserSchema = new Schema(
         ref: "Todo",
       },
     ],
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
   },
   { timestamps: true }
 );
 
 const User = models.User || model("User", UserSchema);
-
 export default User;
