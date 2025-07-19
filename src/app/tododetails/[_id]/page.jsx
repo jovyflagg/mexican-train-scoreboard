@@ -1,9 +1,10 @@
 "use client"
-import React from 'react'
+import React, { useContext } from 'react'
 import TodoDetails from '../../components/TodoDetails/TodoDetails'
 import { useParams } from 'next/navigation'
+import { TodoContext } from '../../../../context/TodoContext'
 
-const page = () => {
+const page =  () => {
   const params = useParams()
   
   return (

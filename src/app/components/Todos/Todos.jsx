@@ -2,7 +2,6 @@
 
 import { useContext, useState } from "react";
 import { TodoContext } from "../../../../context/TodoContext";
-import SkeletonTodoList from "../Skeleton/SkeletonTodoList";
 import Link from "next/link";
 
 export default function Todo() {
@@ -34,6 +33,7 @@ export default function Todo() {
         await createTodo({
             title: input.title.trim(),
             completed: input.completed,
+            notes: ""
         });
         setInput({ title: "", completed: false });
     };
@@ -95,58 +95,56 @@ export default function Todo() {
                 />
 
                 {/* Scrollable Todo List */}
-                {loading ? (
-                    <SkeletonTodoList />
-                ) : (
-                    <ul className="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
-                        {todos.map((todo) => (
-                            <li
-                                key={todo._id}
-                                className={`flex items-center justify-between p-4 rounded-md shadow-sm border ${todo.completed ? "bg-green-100 border-green-300" : "bg-white border-gray-200"
+
+                <ul className="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
+                    {todos.map((todo) => (
+                        <li
+                            key={todo._id}
+                            className={`flex items-center justify-between p-4 rounded-md shadow-sm border ${todo.completed ? "bg-green-100 border-green-300" : "bg-white border-gray-200"
+                                }`}
+                        >
+
+                            <span
+                                className={`flex-1 ${todo.completed ? "line-through text-gray-500" : "text-gray-800"
                                     }`}
                             >
+                                <Link
+                                    href={`tododetails/${todo._id}`}>
+                                    {todo.title}
+                                </Link>
+                            </span>
 
-                                <span
-                                    className={`flex-1 ${todo.completed ? "line-through text-gray-500" : "text-gray-800"
+                            {/* Toggle button */}
+                            <button
+                                onClick={() => handleUpdate(todo._id, { completed: !todo.completed })}
+                                className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${todo.completed ? "bg-green-500" : "bg-gray-300"
+                                    }`}
+                            >
+                                <div
+                                    className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${todo.completed ? "translate-x-6" : ""
                                         }`}
-                                >
-                                    <Link
-                                        href={`tododetails/${todo._id}`}>
-                                        {todo.title}
-                                    </Link>
-                                </span>
+                                />
+                            </button>
 
-                                {/* Toggle button */}
+                            <div className="flex items-center gap-2 ml-4">
                                 <button
-                                    onClick={() => handleUpdate(todo._id, { completed: !todo.completed })}
-                                    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${todo.completed ? "bg-green-500" : "bg-gray-300"
-                                        }`}
+                                    onClick={() => openEditModal(todo)}
+                                    className="text-blue-500 hover:text-blue-700 font-semibold"
                                 >
-                                    <div
-                                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${todo.completed ? "translate-x-6" : ""
-                                            }`}
-                                    />
+                                    ✎
                                 </button>
+                                <button
+                                    onClick={() => removeTodo(todo._id)}
+                                    className="text-red-500 hover:text-red-700 font-semibold"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        </li>
+                    ))}
 
-                                <div className="flex items-center gap-2 ml-4">
-                                    <button
-                                        onClick={() => openEditModal(todo)}
-                                        className="text-blue-500 hover:text-blue-700 font-semibold"
-                                    >
-                                        ✎
-                                    </button>
-                                    <button
-                                        onClick={() => removeTodo(todo._id)}
-                                        className="text-red-500 hover:text-red-700 font-semibold"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                            </li>
-                        ))}
+                </ul>
 
-                    </ul>
-                )}
 
 
 

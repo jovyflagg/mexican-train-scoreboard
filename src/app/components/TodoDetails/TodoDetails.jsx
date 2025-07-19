@@ -18,7 +18,9 @@ const TodoDetails = ({ _id }) => {
         const fetchDetails = async () => {
             const data = await getTodoDetails(_id);
             setTodo(data);
+
             setForm({
+                _id: data._id || "",
                 title: data.title || "",
                 notes: data.notes || "",
                 completed: data.completed || false,
@@ -28,22 +30,28 @@ const TodoDetails = ({ _id }) => {
     }, [_id]);
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value } = e.target;
         setForm((prev) => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: value,
+        }));
+    };
+
+    const handleToggleCompleted = () => {
+        setForm((prev) => ({
+            ...prev,
+            completed: !prev.completed,
         }));
     };
 
     const handleSave = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const updated = await updateTodo(_id, form);
-        console.log(updated)
         setTodo(updated);
         setEditMode(false);
     };
 
-    if (loading) {
+    if (loading || !todo) {
         return (
             <div className="min-h-screen flex items-center justify-center text-gray-600 text-xl bg-gradient-to-b from-blue-100 to-blue-200">
                 Loading...
@@ -56,7 +64,6 @@ const TodoDetails = ({ _id }) => {
             <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
                 <div className="flex justify-between items-center mb-6">
                     <header className="text-3xl font-bold text-gray-800">📋 Todo Details</header>
-
                 </div>
 
                 <div className="space-y-6">
@@ -81,16 +88,25 @@ const TodoDetails = ({ _id }) => {
                     {/* Notes */}
                     <div>
                         <label className="block text-gray-600 text-sm font-semibold mb-1">Notes</label>
-
-                        <textarea
-                            name="notes"
-                            value={form?.notes}
-                            onChange={handleChange}
-                            rows={4}
-                            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-
+                        {editMode ? (
+                            <textarea
+                                name="notes"
+                                value={form.notes}
+                                onChange={handleChange}
+                                rows={4}
+                                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        ) : (
+                            <textarea
+                                name="notes"
+                                value={form.notes}
+                                disabled
+                                rows={4}
+                                className="w-full p-3 border rounded-md bg-gray-100 border-gray-200"
+                            />
+                        )}
                     </div>
+                    
 
                     {/* Completed */}
                     <div>
@@ -98,13 +114,14 @@ const TodoDetails = ({ _id }) => {
 
                         {editMode ? (
                             <div className="flex items-center gap-2">
-                                <input
-                                    type="checkbox"
-                                    name="completed"
-                                    checked={form?.completed}
-                                    onChange={handleChange}
-                                    className="h-5 w-5 text-blue-600"
-                                />
+                                <button
+                                    onClick={handleToggleCompleted}
+                                    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${form.completed ? "bg-green-500" : "bg-gray-300"}`}
+                                >
+                                    <div
+                                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${form.completed ? "translate-x-6" : ""}`}
+                                    />
+                                </button>
                                 <span className="text-gray-800">Mark as completed</span>
                             </div>
                         ) : (
@@ -117,6 +134,7 @@ const TodoDetails = ({ _id }) => {
                                 {todo?.completed ? "Yes" : "No"}
                             </div>
                         )}
+
                         <br />
                         <br />
                         <div className="flex gap-3">
@@ -128,7 +146,7 @@ const TodoDetails = ({ _id }) => {
                             </Link>
                             <button
                                 onClick={() => setEditMode(!editMode)}
-                                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition text-sm"
+                                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition text-sm w-20 text-center"
                             >
                                 {editMode ? "Cancel" : "Edit"}
                             </button>
@@ -153,7 +171,6 @@ const TodoDetails = ({ _id }) => {
                         </div>
                     )}
                 </div>
-
             </div>
         </div>
     );

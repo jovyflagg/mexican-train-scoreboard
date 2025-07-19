@@ -65,7 +65,8 @@ const TodoContextProvider = ({ children }) => {
   };
 
   const updateTodo = async (_id, updateData) => {
-
+    console.log(_id)
+    console.log(updateData)
     try {
       const res = await fetch(`/api/todos/${_id}`, {
         method: "PUT",
