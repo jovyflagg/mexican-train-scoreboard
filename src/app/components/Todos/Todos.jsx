@@ -175,7 +175,7 @@ export default function Todo() {
 
             {/* Edit Modal */}
             {isEditing && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                <div className="fixed inset-0  bg-gray-600/50  z-50 flex items-center justify-center">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md">
                         <h2 className="text-xl font-semibold mb-4">Edit Task</h2>
                         <input

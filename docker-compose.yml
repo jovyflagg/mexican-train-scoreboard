@@ -1,0 +1,25 @@
+
+services:
+  app:
+    container_name: template
+    build: .
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env.development
+    depends_on:
+      - mongo
+
+  mongo:
+    container_name: mongo-template
+    image: mongo:6
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

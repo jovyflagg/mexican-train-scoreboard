@@ -31,9 +31,7 @@ const TodoContextProvider = ({ children }) => {
     const fetchTodos = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
-          `/api/todos?page=${page}&limit=${PAGE_SIZE}&search=${encodeURIComponent(search)}`
-        );
+        const res = await fetch(`/api/todos?page=${page}&limit=${PAGE_SIZE}&search=${encodeURIComponent(search)}`);
         const data = await res.json();
         setTodos(data.todos || []);
         setTotalPages(data.pagination?.totalPages || 1);

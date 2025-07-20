@@ -4,7 +4,7 @@ import Image from "next/image";
 import { UsersContext } from "../../../../context/UserContext";
 import SkeletonProfile from "../Skeleton/SkeletonProfile";
 
-const Profile = ({ view }) => {
+const Profile = () => {
   const { user, updateImage, setUser, update } = useContext(UsersContext);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -143,7 +143,7 @@ const Profile = ({ view }) => {
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 text-black">
+        <div className="fixed inset-0 flex items-center bg-gray-600/50 justify-center z-50 text-black">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 space-y-4">
             <h2 className="text-xl font-semibold text-gray-800">
               Edit Profile
